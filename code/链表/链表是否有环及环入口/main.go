@@ -79,8 +79,6 @@ func loopCycle(head *nodeList)*nodeList{
 
 
 
-
-
 func main(){
 
 	n1 := new(nodeList)
