@@ -302,3 +302,384 @@ y+z是环的长度
 
 n=1 时，x=z，此时我们将 fast 放到链表头，然后 fast 和 slow 每次走一步，相遇节点就是环的入口；
 n>1 时，我们将 fast 放到链表头，当 fast 和 slow 相遇时，说明 slow 在环里转了 n-1 圈后又走了z步，等价于 n=1 的情况。
+
+
+
+## 四、两个链表是否相交及交点
+
+![image-20210710110803815](readme.assets/image-20210710110803815.png)
+
+<font color=red size=5x>链表结构</font>
+
+```go
+//构造链表
+	n1 := new(nodeList)
+	n1.val = 1
+
+	n2 := new(nodeList)
+	n2.val = 2
+
+	n3 := new(nodeList)
+	n3.val = 3
+	n4 := new(nodeList)
+	n4.val = 4
+
+	n5 := new(nodeList)
+	n5.val = 5
+
+	n6 := new(nodeList)
+	n6.val = 6
+
+
+	n1.Next = n2
+	n2.Next = n3
+	n3.Next = n4
+	n4.Next = n5
+	n5.Next = n6
+
+	//链表2
+	e1 := new(nodeList)
+	e1.val = 9
+
+	e2 := new(nodeList)
+	e2.val = 5
+
+	e3 := new(nodeList)
+	e3.val = 6
+
+
+	e1.Next = e2
+	e2.Next = e3
+	e3.Next = n5
+
+	fmt.Println(*isCycleSet(n1,e1))
+```
+
+
+
+### HashSet
+
+此种方法简单，但是时间复杂度和空间复杂度都是O(n)
+
+思路
+
+- 遍历链表A，将链表地址存储在hashSet中
+- 遍历链表B，如果链表B存在hashSet中，则此时就是交点
+
+
+
+==代码==
+
+```go
+/**
+	hashSet的解法
+	1、遍历链表A，将链表地址存储在hashSet中
+	2、遍历链表B，如果链表B存在hashSet中，则此时就是交点
+
+	时间复杂度O(n)，空间复杂度O(n)
+*/
+func isCycleSet(a,b *nodeList)*nodeList{
+	var pMap = make(map[string]struct{})
+	for a.Next != nil{
+		pMap[fmt.Sprintf("%p",a)] = struct{}{}
+		a = a.Next
+	}
+
+	for b.Next != nil{
+		if _ ,ok := pMap[fmt.Sprintf("%p",b)];ok{
+			return b
+		}
+		b= b.Next
+	}
+
+	return nil
+}
+```
+
+
+
+```go
+{5 0xc00008e230}
+```
+
+
+
+### 快慢指针
+
+空间复杂度O(1)
+
+时间复杂度O(n)
+
+
+
+==如果两个链表相交，那么相交后的长度是相同的==
+
+构造相同长度的链表
+
+1. 指针 pA 指向 A 链表，指针 pB 指向 B 链表，依次往后遍历
+2. 如果 pA 到了末尾，则 pA = headB 继续遍历
+3. 如果 pB 到了末尾，则 pB = headA 继续遍历
+4. 比较长的链表指针指向较短链表head时，长度差就消除了
+5. 如此，只需要将最短链表遍历两次即可找到位置
+
+
+
+![相交链表.png](readme.assets/e86e947c8b87ac723b9c858cd3834f9a93bcc6c5e884e41117ab803d205ef662-相交链表.png)
+
+
+
+==代码==
+
+```go
+/**
+	快慢指针
+	1、指针 pA 指向 A 链表，指针 pB 指向 B 链表，依次往后遍历
+	2、如果 pA 到了末尾，则 pA = headB 继续遍历
+	3、如果 pB 到了末尾，则 pB = headA 继续遍历
+	4、比较长的链表指针指向较短链表head时，长度差就消除了
+	5、如此，只需要将最短链表遍历两次即可找到位置
+	总的思想就是 我吹过你吹过的晚风
+	时间复杂度o(m+n) 也就是o(n)
+	空间复杂度O(1)
+*/
+func isCycleRun(a,b *nodeList)*nodeList{
+	if a==nil || b == nil{
+		return nil
+	}
+	headA,headB  := a,b
+	for a != b{
+		if a == nil{
+			a = headB
+		}else{
+			a=a.Next
+		}
+
+		if b == nil{
+			b = headA
+		}else{
+			b = b.Next
+		}
+	}
+
+	return a
+}
+```
+
+
+
+```go
+{5 0xc00008e230}
+```
+
+
+
+## 五、删除or输出链表倒数的第k个元素
+
+题目描述
+
+给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
+
+进阶：你能尝试使用一趟扫描实现吗？
+
+ 
+
+示例 1：
+
+
+输入：head = [1,2,3,4,5], n = 2
+输出：[1,2,3,5]
+示例 2：
+
+输入：head = [1], n = 1
+输出：[]
+示例 3：
+
+输入：head = [1,2], n = 1
+输出：[1]
+
+
+
+<font color=red size=5x>获取链表长度，遍历拼接</font>
+
+
+
+```go
+/**
+	思路1
+	遍历链表，获取长度l
+	再次遍历链表，第k个坐标为l-1-k
+	时间复杂度O(3n),也就是O(n)
+	空间复杂度O(3n),也就是O(n)
+*/
+func delK(head *nodeList,n int)*nodeList{
+	var (
+		l int
+		sl []*nodeList
+		slC []*nodeList
+	)
+	for head != nil{
+		sl = append(sl,head)
+		head = head.Next
+		l++
+	}
+
+	for i,v := range sl{
+		if i == l-n{
+			continue
+			//如果需要输出第k个元素就可以输出了
+		}
+		slC = append(slC,v)
+
+	}
+
+	for i,v:= range slC{
+		if i < len(slC)-1{
+			v.Next = slC[i+1]
+
+		}
+	}
+
+	return slC[0]
+}
+
+```
+
+
+
+```go
+1
+&{2 0xc00008e200}
+2
+&{3 0xc00008e220}
+3
+&{5 0xc00008e230}
+5
+&{6 <nil>}
+```
+
+
+
+
+
+<font color=red size=5x>**快慢指针**</font>
+
+- fast首先走n + 1步 ，为什么是n+1呢，因为只有这样同时移动的时候slow才能指向删除节点的上一个节点（方便做删除操作）
+- fast和slow同时移动，之道fast指向末尾
+- 删除slow指向的下一个节点，如图
+
+
+
+![img](readme.assets/cc43daa8cbb755373ce4c5cd10c44066dc770a34a6d2913a52f8047cbf5e6e56-file_1559548337458.gif)
+
+
+
+
+
+```go
+/**
+	快慢指针想起始位置一起出发，快指针移动到快k的位置
+	快指针比慢指针快k+1步，当快指针到的尾部的时候，慢指针正好是要删除的或者输出的元素、
+	为什么是k+1步，因为只有这样，当快指针到达尾部的时候，慢指针才是指向要删除元素的上一个元素
+	时间复杂度O(n)
+	空间复杂度O(1)
+*/
+func delFRun(head *nodeList,n int)*nodeList{
+	//构造虚拟头节点，避免头节点单独处理
+	dummyNode := new(nodeList)
+	dummyNode.Next = head
+
+	var slow *nodeList
+	cur := dummyNode
+	//fmt.Printf("%p\n",cur) //0xc000010260
+	//fmt.Printf("%p\n",dummyNode)//0xc000010260
+	
+	i:=1
+	for head != nil{
+		//slow先不走，让快指针到达k+1的位置
+		if i>=n{
+			slow = cur//要删除元素的上一个元素
+			cur = cur.Next//慢指针移动
+		}
+		i++
+		head = head.Next
+	}
+
+	slow.Next = slow.Next.Next
+
+	return dummyNode.Next
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
