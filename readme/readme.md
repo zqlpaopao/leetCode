@@ -613,17 +613,98 @@ func delFRun(head *nodeList,n int)*nodeList{
 
 
 
+# 4、栈
+栈 栈顶是O(1)，栈底O(n)
+
+## 一、检查全部括号是否匹配
+
+leetcode20
+
+```handlebars
+给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+
+有效字符串需满足：
+
+左括号必须用相同类型的右括号闭合。
+左括号必须以正确的顺序闭合。
+```
 
 
 
+<font color=red size=5x>**解题思路**</font>
 
+- ==如果有一个右括号和前一个是不匹配的，就是不匹配==
 
+- 将左括号和右括号分开
+- 左括号入栈，遇到右括号和栈顶的元素对比
+- 防止全部左括号和全部右括号的情况
 
+![image-20210712183309383](readme.assets/image-20210712183309383.png)
 
+此时遇到第一个右括号和栈顶的元素对比，如果满足，消除栈顶的这个元素
 
+![image-20210712183404336](readme.assets/image-20210712183404336.png)
 
+此时满足消除
 
+![image-20210712183422408](readme.assets/image-20210712183422408.png)
 
+一次进行
+
+- ==在遍历中有右括号的时候，栈为空，就不满足==
+- ==最后栈不是空的，也是有不匹配的==
+
+![image-20210712183538338](readme.assets/image-20210712183538338.png)
+
+<font color=red size=5x>**代码**</font>
+
+```go
+/**
+给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+
+有效字符串需满足：
+
+左括号必须用相同类型的右括号闭合。
+左括号必须以正确的顺序闭合。
+	时间复杂度O(n)
+	空间复杂度o(n)
+ */
+
+func isValid(s []byte) bool {
+	Mp := map[byte]byte{
+		')':'(',
+		'}':'{',
+		']':'[',
+	}
+
+	stack := []byte{}
+
+	for _ ,v := range s{
+		if v1,ok := Mp[v];!ok{
+			stack = append(stack,v)
+		}else {
+			//stack < 1 防止全是右边的
+			//和栈顶的比较，如果遇到的第一个右括号和栈顶的不匹配，肯定就不符合了
+			if len(stack) <1 || v1 != stack[len(stack)-1]{
+				return false
+
+			}else{
+				//匹配的话移除元素
+				stack = stack[0:len(stack)-1]
+			}
+		}
+
+	}
+	//防止只有(( 左括号这种
+	if len(stack) > 0{
+		return false
+	}
+
+	return true
+}
+```
+
+![image-20210712183704519](readme.assets/image-20210712183704519.png)
 
 
 
