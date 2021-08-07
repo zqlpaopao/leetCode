@@ -708,19 +708,161 @@ func isValid(s []byte) bool {
 
 
 
+# 5、二叉树==搜索==树
+
+- 每个节点至多有两个子节点
+- 子节点左边的节点必须小于根节点
+- 子节点右边的元素必须全部大于根节点
+
+## 题
+
+```go
+给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+
+假设一个二叉搜索树具有如下特征：
+
+节点的左子树只包含小于当前节点的数。
+节点的右子树只包含大于当前节点的数。
+所有左子树和右子树自身必须也是二叉搜索树。
+示例 1:
+
+输入:
+    2
+   / \
+  1   3
+输出: true
+示例 2:
+
+输入:
+    5
+   / \
+  2   4
+     / \
+    3   6
+输出: false
+解释: 输入为: [5,1,4,null,null,3,6]。
+     根节点的值为 5 ，但是其右子节点值为 4 。
+```
 
 
 
 
 
+![image-20210730143717138](readme.assets/image-20210730143717138.png)
+
+
+
+- 图1是满足的 右边的所有左子节点都是满足小于根节点，右子节点大于根节点
+- 图2中的4室不满足大于根节点5的，所以不符合
+
+<font color=red size=5x>**构造数据**</font>
+
+```go
+
+type TreeNode struct {
+	Val int
+	Left *TreeNode
+	Right *TreeNode
+}
+
+root1 := &TreeNode{
+		Val:   5,
+		Left:  &TreeNode{
+			Val:   3,
+			Left:  &TreeNode{
+				Val:   1,
+				Left:  nil,
+				Right: nil,
+			},
+			Right: &TreeNode{
+				Val:   2,
+				Left:  nil,
+				Right: nil,
+			},
+		},
+		Right: &TreeNode{
+			Val:   7,
+			Left:  &TreeNode{
+				Val:   6,
+				Left:  nil,
+				Right: nil,
+			},
+			Right: &TreeNode{
+				Val:   8,
+				Left:  nil,
+				Right: nil,
+			},
+		},
+	}
+```
+
+
+
+<font color=red size=5x>**第一种递归**</font>
+
+![image-20210805161548021](readme.assets/image-20210805161548021.png)
 
 
 
 
 
+```go
+func isValidBST(root *TreeNode) bool {
+	return isValidBSTImpl(root, -1 << 63, 1 << 63 -1)
+}
+
+
+func isValidBSTImpl(n *TreeNode, min int, max int) bool {
+	if n == nil {
+		return true
+	}
+
+	//左节点的是最小-999... 或者左节点的最大值 >= 根节点 ---->不满足条件
+	//右节点的最小值<=跟节点  或者最大值越界999... ----->不满足
+	if n.Val <= min || n.Val >= max {
+		return false
+	}
+	return isValidBSTImpl(n.Left, min,n.Val) && isValidBSTImpl(n.Right, n.Val, max)
+}
+```
 
 
 
+
+
+<font color=red size=5x>**第二种-中序遍历**</font>
+
+中序遍历出来的是有序的，值需要比较前一个和后一个的关系是否满足后者大于前者就可以
+
+![image-20210807110031139](readme.assets/image-20210807110031139.png)
+
+- 图中 红色是正向的驱动
+- 图中绿色是返回条件
+- 图中蓝色是右子节点
+- 1⃣️、2⃣️是执行顺序
+- 要在脑海中走一遍程序，印象会更深刻
+
+
+
+```go
+var Pre = -1 << 63
+
+func isValidBST1(root *TreeNode)bool{
+	if root == nil{
+		return true
+	}
+	if !isValidBST1(root.Left){
+		return false
+	}
+	if root.Val <= Pre{
+		return false
+	}
+	Pre = root.Val
+
+	return isValidBST1(root.Right)
+
+}
+```
 
 
 
