@@ -868,15 +868,173 @@ func isValidBST1(root *TreeNode)bool{
 
 
 
+# 6、二叉树的最近公共祖先
+
+示例 1：
+
+![image-20210813162537507](readme.assets/image-20210813162537507.png)
+
+
+
+```go
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+输出：3
+解释：节点 5 和节点 1 的最近公共祖先是节点 3 。
+```
+
+
+
+示例 2：
+
+![image-20210813162621127](readme.assets/image-20210813162621127.png)
+
+```go
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+输出：5
+解释：节点 5 和节点 4 的最近公共祖先是节点 5 。因为根据定义最近公共祖先节点可以为节点本身。
+```
+
+
+
+```go
+示例 3：
+输入：root = [1,2], p = 1, q = 2
+输出：1
+```
 
 
 
 
 
+<font color=red size=5x>**分析**</font>
+
+此题找的是最近，如果左有，右边也有，最近的肯定是第一次就遇到的值是最近的
+
+![image-20210813162400065](readme.assets/image-20210813162400065.png)
+
+分集几种情况
+1. 如果p、q都在左侧，那么遇到的提前遇到的肯定是最早的公共父节点
+2. 如果p、q都在右侧，那么最早遇到的节点一定是最早的公共父节点
+3. 如果p、q存在于左右两侧，那么最早的公共父节点一定是root节点
+
+
+
+基于此规则，那么我们分别在左侧和右侧寻找
+
+- 如果左侧为空，那么说明都在右侧，返回右侧的第一个遇到的
+- 如果右侧为空，说明都在左侧，返回遇到的第一个
+- 如果左右都不为空，那么最早的一定是跟节点
+
+
+
+==构造树结构==
+
+```go
+type TreeNode struct {
+	Val int
+	Left *TreeNode
+	Right *TreeNode
+}
+
+root1 := &TreeNode{
+		Val:   3,
+		Left:  &TreeNode{
+			Val:   5,
+			Left:  &TreeNode{
+				Val:   6,
+				Left:  nil,
+				Right: nil,
+			},
+			Right: &TreeNode{
+				Val:   2,
+				Left:  &TreeNode{
+					Val:   7,
+					Left:  nil,
+					Right: nil,
+				},
+				Right: &TreeNode{
+					Val:   4,
+					Left:  nil,
+					Right: nil,
+				},
+			},
+		},
+		Right: &TreeNode{
+			Val:   1,
+			Left:  &TreeNode{
+				Val:   0,
+				Left:  nil,
+				Right: nil,
+			},
+			Right: &TreeNode{
+				Val:   8,
+				Left:  nil,
+				Right: nil,
+			},
+		},
+	}
+	l := &TreeNode{
+		Val:   5,
+		Left:  nil,
+		Right: nil,
+	}
+	r := &TreeNode{
+		Val:   1,
+		Left:  nil,
+		Right: nil,
+	}
+```
 
 
 
 
+
+```go
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+	if root.Val == p.Val || root.Val == q.Val {
+		return root
+	}
+	left := lowestCommonAncestor(root.Left, p, q)
+	right := lowestCommonAncestor(root.Right, p, q)
+	if left != nil && right != nil {
+		return root
+	}
+	if left == nil {
+		return right
+	}
+	return left
+}
+```
+
+
+
+
+
+## BST查找最近公共父节点
+
+BST的话，是左侧全部小雨跟节点，右侧全部大于跟节点，基于这个特点，我们可以看q、p是比root大还是小，还是有大有小
+
+```go
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+
+	if (root.Val - p.Val) * (root.Val - q.Val) < 0{
+		return root
+	}
+	if p.Val < root.Val{
+		return lowestCommonAncestor(root.Left, p, q)
+	}
+	if p.Val > root.Val{
+		return lowestCommonAncestor(root.Right, p, q)
+	}
+	return nil
+}
+```
 
 
 

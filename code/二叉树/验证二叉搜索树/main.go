@@ -17,6 +17,7 @@ type TreeNode struct {
  *     Left *TreeNode
  *     Right *TreeNode
  * }
+ * 时间复杂度O(n)
  */
 func isValidBST(root *TreeNode) bool {
 	return isValidBSTImpl(root, -1 << 63, 1 << 63 -1)
@@ -35,8 +36,10 @@ func isValidBSTImpl(n *TreeNode, min int, max int) bool {
 	return isValidBSTImpl(n.Left,min,n.Val) && isValidBSTImpl(n.Right,n.Val,max)
 }
 
+/**
+时间复杂度O(n)
+*/
 var Pre = -1 << 63
-
 func isValidBST1(root *TreeNode)bool{
 	if root == nil{
 		return true
