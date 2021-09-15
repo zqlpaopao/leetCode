@@ -1040,11 +1040,41 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 
 
 
+# 7、二叉树遍历
+
+## 二叉树
+
+首先，二叉树是一种「数据结构」。简单来说，就是一个包含**节点**，以及它的**左右孩子**的一种数据结构。
+
+![image-20210817155300946](readme.assets/image-20210817155300946.png)
+
+## 遍历方式
+
+- 先序遍历，根节点-> 左孩子 -> 右孩子 的方式遍历，即「先序遍历」，每次遍历跟节点
+   1 -> 2 -> 4 -> 5 -> 3 -> 6 -> 7
+- 中序遍历，左孩子-> 根节点->右孩子 的方式遍历，即「中序遍历」，遍历结果为
+   4 -> 2 -> 5 -> 1 -> 6 -> 3 -> 7
+- 后序遍历，左孩子->右孩子->根节点 的方式遍历，即「后序遍历」，遍历结果为
+   4 -> 5 -> 2 -> 6 -> 7 -> 3 -> 1
+- 层级遍历,就是按照每一层从左向右遍历，遍历结果
+   1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 
 
 
+## 相关题目
+
+### 相关题目
+
+这里是 4 道相关题目：
+
+1. [144.二叉树的前序遍历](https://leetcode-cn.com/problems/binary-tree-preorder-traversal/)
+2. [94. 二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
+3. [145. 二叉树的后序遍历](https://leetcode-cn.com/problems/binary-tree-postorder-traversal/)
+4. [102. 二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
 
 
+
+这四道题目描述是相似的，就是给定一个二叉树，让我们使用一个数组来返回遍历结果，首先来看递归解法。
 
 
 
